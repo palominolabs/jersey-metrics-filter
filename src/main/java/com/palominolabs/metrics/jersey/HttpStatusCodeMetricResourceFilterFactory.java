@@ -4,6 +4,7 @@
 
 package com.palominolabs.metrics.jersey;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -12,7 +13,6 @@ import com.sun.jersey.api.model.AbstractResourceMethod;
 import com.sun.jersey.api.model.AbstractSubResourceLocator;
 import com.sun.jersey.spi.container.ResourceFilter;
 import com.sun.jersey.spi.container.ResourceFilterFactory;
-import com.yammer.metrics.core.MetricsRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,11 +26,11 @@ public final class HttpStatusCodeMetricResourceFilterFactory implements Resource
     private final MetricsConfig metricsConfig;
 
     private final ResourceMetricNamer namer;
-    private final MetricsRegistry metricsRegistry;
+    private final MetricRegistry metricsRegistry;
 
     @Inject
     HttpStatusCodeMetricResourceFilterFactory(MetricsConfig metricsConfig, ResourceMetricNamer namer,
-        MetricsRegistry metricsRegistry) {
+        @JerseyResourceMetrics MetricRegistry metricsRegistry) {
         this.metricsConfig = metricsConfig;
         this.namer = namer;
         this.metricsRegistry = metricsRegistry;

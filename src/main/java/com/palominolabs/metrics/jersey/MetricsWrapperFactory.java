@@ -4,15 +4,14 @@
 
 package com.palominolabs.metrics.jersey;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.palominolabs.jersey.dispatchwrapper.ResourceMethodDispatchWrapper;
 import com.palominolabs.jersey.dispatchwrapper.ResourceMethodDispatchWrapperChain;
 import com.palominolabs.jersey.dispatchwrapper.ResourceMethodDispatchWrapperFactory;
 import com.sun.jersey.api.core.HttpContext;
 import com.sun.jersey.api.model.AbstractResourceMethod;
-import com.yammer.metrics.core.MetricsRegistry;
-import com.yammer.metrics.core.Timer;
-import com.yammer.metrics.core.TimerContext;
 
 /**
  * Factory for dispatch wrappers that wrap request invocation to get timing info.
@@ -22,10 +21,11 @@ final class MetricsWrapperFactory implements ResourceMethodDispatchWrapperFactor
     private final MetricsConfig metricsConfig;
 
     private final ResourceMetricNamer namer;
-    private final MetricsRegistry metricsRegistry;
+    private final MetricRegistry metricsRegistry;
 
     @Inject
-    MetricsWrapperFactory(MetricsConfig metricsConfig, ResourceMetricNamer namer, MetricsRegistry metricsRegistry) {
+    MetricsWrapperFactory(MetricsConfig metricsConfig, ResourceMetricNamer namer,
+        @JerseyResourceMetrics MetricRegistry metricsRegistry) {
         this.metricsConfig = metricsConfig;
         this.namer = namer;
         this.metricsRegistry = metricsRegistry;
@@ -42,12 +42,12 @@ final class MetricsWrapperFactory implements ResourceMethodDispatchWrapperFactor
 
         Class<?> resourceClass = am.getResource().getResourceClass();
         String metricId = namer.getMetricBaseName(am);
-        final Timer timer = metricsRegistry.newTimer(resourceClass, metricId + " timer");
+        final Timer timer = metricsRegistry.timer(MetricRegistry.name(resourceClass, metricId + " timer"));
         return new ResourceMethodDispatchWrapper() {
             @Override
             public void wrapDispatch(Object resource, HttpContext context, ResourceMethodDispatchWrapperChain chain) {
 
-                final TimerContext time = timer.time();
+                final Timer.Context time = timer.time();
                 try {
                     chain.wrapDispatch(resource, context);
                 } finally {
