@@ -23,11 +23,15 @@ public final class HttpStatusCodeMetricResourceFilterFactory implements Resource
 
     private static final Logger logger = LoggerFactory.getLogger(HttpStatusCodeMetricResourceFilterFactory.class);
 
+    private final MetricsConfig metricsConfig;
+
     private final ResourceMetricNamer namer;
     private final MetricsRegistry metricsRegistry;
 
     @Inject
-    HttpStatusCodeMetricResourceFilterFactory(ResourceMetricNamer namer, MetricsRegistry metricsRegistry) {
+    HttpStatusCodeMetricResourceFilterFactory(MetricsConfig metricsConfig, ResourceMetricNamer namer,
+        MetricsRegistry metricsRegistry) {
+        this.metricsConfig = metricsConfig;
         this.namer = namer;
         this.metricsRegistry = metricsRegistry;
     }
@@ -41,11 +45,21 @@ public final class HttpStatusCodeMetricResourceFilterFactory implements Resource
             logger.debug("Ignoring AbstractSubResourceLocator " + am);
             return null;
         } else if (am instanceof AbstractResourceMethod) {
+
+            EnabledState state = MetricAnnotationFeatureResolver
+                .getState((AbstractResourceMethod) am, new StatusCodeMetricsAnnotationChecker());
+
+            if (state == EnabledState.OFF ||
+                (state == EnabledState.UNSPECIFIED && !metricsConfig.isStatusCodeEnabledByDefault())) {
+                return null;
+            }
+
             String metricBaseName = namer.getMetricBaseName((AbstractResourceMethod) am);
             Class<?> resourceClass = am.getResource().getResourceClass();
 
             return Lists
-                .<ResourceFilter>newArrayList(new HttpStatusCodeMetricResourceFilter(metricsRegistry, metricBaseName, resourceClass));
+                .<ResourceFilter>newArrayList(
+                    new HttpStatusCodeMetricResourceFilter(metricsRegistry, metricBaseName, resourceClass));
         } else {
             logger.warn("Got an unexpected instance of " + am.getClass().getName() + ": " + am);
             return null;

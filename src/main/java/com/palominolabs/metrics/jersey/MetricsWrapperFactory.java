@@ -4,7 +4,6 @@
 
 package com.palominolabs.metrics.jersey;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
 import com.palominolabs.jersey.dispatchwrapper.ResourceMethodDispatchWrapper;
 import com.palominolabs.jersey.dispatchwrapper.ResourceMethodDispatchWrapperChain;
@@ -34,9 +33,10 @@ final class MetricsWrapperFactory implements ResourceMethodDispatchWrapperFactor
 
     @Override
     public ResourceMethodDispatchWrapper createDispatchWrapper(AbstractResourceMethod am) {
-        EnabledState state = getState(am);
+        EnabledState state = MetricAnnotationFeatureResolver.getState(am, new TimingMetricsAnnotationChecker());
 
-        if (state == EnabledState.OFF || (state == EnabledState.UNSPECIFIED && !metricsConfig.isTimingEnabledByDefault())) {
+        if (state == EnabledState.OFF ||
+            (state == EnabledState.UNSPECIFIED && !metricsConfig.isTimingEnabledByDefault())) {
             return null;
         }
 
@@ -55,31 +55,5 @@ final class MetricsWrapperFactory implements ResourceMethodDispatchWrapperFactor
                 }
             }
         };
-    }
-
-    @VisibleForTesting
-    static EnabledState getState(AbstractResourceMethod am) {
-        // check method, then class
-        for (ResourceMetrics ann : new ResourceMetrics[]{am.getAnnotation(ResourceMetrics.class), am
-            .getResource().getAnnotation(ResourceMetrics.class)}) {
-
-            if (ann != null) {
-                if (ann.enabled()) {
-                    return EnabledState.ON;
-                } else {
-                    return EnabledState.OFF;
-                }
-            }
-        }
-
-        return EnabledState.UNSPECIFIED;
-    }
-
-    @SuppressWarnings("PackageVisibleInnerClass")
-    @VisibleForTesting
-    static enum EnabledState {
-        ON,
-        OFF,
-        UNSPECIFIED
     }
 }

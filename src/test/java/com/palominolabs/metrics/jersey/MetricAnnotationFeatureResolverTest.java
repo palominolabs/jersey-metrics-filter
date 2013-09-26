@@ -1,10 +1,5 @@
-/*
- * Copyright (c) 2012 Palomino Labs, Inc.
- */
-
 package com.palominolabs.metrics.jersey;
 
-import com.palominolabs.metrics.jersey.MetricsWrapperFactory.EnabledState;
 import com.sun.jersey.api.model.AbstractResource;
 import com.sun.jersey.api.model.AbstractResourceMethod;
 import org.junit.Test;
@@ -12,13 +7,12 @@ import org.junit.Test;
 import javax.ws.rs.Path;
 import java.lang.annotation.Annotation;
 
-import static com.palominolabs.metrics.jersey.MetricsWrapperFactory.EnabledState.OFF;
-import static com.palominolabs.metrics.jersey.MetricsWrapperFactory.EnabledState.ON;
-import static com.palominolabs.metrics.jersey.MetricsWrapperFactory.EnabledState.UNSPECIFIED;
-import static com.palominolabs.metrics.jersey.MetricsWrapperFactory.getState;
+import static com.palominolabs.metrics.jersey.EnabledState.OFF;
+import static com.palominolabs.metrics.jersey.EnabledState.ON;
+import static com.palominolabs.metrics.jersey.EnabledState.UNSPECIFIED;
 import static org.junit.Assert.assertEquals;
 
-public final class MetricsWrapperFactoryTest {
+public class MetricAnnotationFeatureResolverTest {
 
     @Test
     public void testGetStateDefault() {
@@ -61,8 +55,10 @@ public final class MetricsWrapperFactoryTest {
     }
 
     private static void doMethodStateTest(EnabledState expected, Class<?> resourceClass,
-                                          Annotation[] methodAnnotations) {
-        assertEquals(expected, getState(getAbstractMethod(resourceClass, methodAnnotations)));
+        Annotation[] methodAnnotations) {
+        assertEquals(expected,
+            MetricAnnotationFeatureResolver
+                .getState(getAbstractMethod(resourceClass, methodAnnotations), new TimingMetricsAnnotationChecker()));
     }
 
     @Path("/foo")
@@ -70,7 +66,7 @@ public final class MetricsWrapperFactoryTest {
 
     }
 
-    @ResourceMetrics(enabled = false)
+    @ResourceMetrics(timing = false)
     private static class FooResourceDisabled {
 
     }
@@ -83,15 +79,20 @@ public final class MetricsWrapperFactoryTest {
     @SuppressWarnings("ClassExplicitlyAnnotation")
     private static class ResourceMetricsImpl implements ResourceMetrics {
 
-        private final boolean enabled;
+        private final boolean timing;
 
-        private ResourceMetricsImpl(boolean enabled) {
-            this.enabled = enabled;
+        private ResourceMetricsImpl(boolean timing) {
+            this.timing = timing;
         }
 
         @Override
-        public boolean enabled() {
-            return enabled;
+        public boolean timing() {
+            return timing;
+        }
+
+        @Override
+        public boolean statusCodes() {
+            return false;
         }
 
         @Override
