@@ -1,0 +1,121 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+group = 'com.palominolabs.jersey'
+version = '1.0.0-SNAPSHOT'
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+ext {
+  depVersions = [
+      jersey: '1.17.1',
+      slf4j: '1.7.5',
+      jetty: '9.0.5.v20130815',
+      guice: '3.0'
+  ]
+}
+
+dependencies {
+  compile "com.palominolabs.jersey:jersey-guice-dispatch-wrapper:1.0.0"
+  compile "com.palominolabs.config:config-inject:1.0.0"
+  compile "com.sun.jersey:jersey-core:$depVersions.jersey"
+  compile "com.sun.jersey:jersey-server:$depVersions.jersey"
+  compile 'com.yammer.metrics:metrics-core:2.1.2'
+
+  compile "com.google.inject.extensions:guice-servlet:$depVersions.guice"
+  compile "com.google.inject.extensions:guice-multibindings:$depVersions.guice"
+
+  compile 'com.google.code.findbugs:jsr305:2.0.1'
+  compile 'com.google.guava:guava:15.0'
+
+  compile "org.slf4j:slf4j-api:$depVersions.slf4j"
+  testRuntime "org.slf4j:slf4j-simple:$depVersions.slf4j"
+  testRuntime "org.slf4j:log4j-over-slf4j:$depVersions.slf4j"
+  testRuntime "org.slf4j:jcl-over-slf4j:$depVersions.slf4j"
+  testCompile "org.slf4j:jul-to-slf4j:$depVersions.slf4j"
+
+  testCompile 'junit:junit:4.11'
+
+  testCompile "org.eclipse.jetty:jetty-servlet:$depVersions.jetty"
+  testCompile "com.sun.jersey.contribs:jersey-guice:$depVersions.jersey"
+  testCompile "com.sun.jersey:jersey-servlet:$depVersions.jersey"
+
+  testCompile 'com.ning:async-http-client:1.7.19'
+
+  testCompile 'org.easymock:easymock:3.2'
+
+}
+
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+  from sourceSets.main.allJava
+  classifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  from javadoc.destinationDir
+  classifier = 'javadoc'
+}
+
+artifacts {
+  // register in 'archives' config so they will be signed
+  archives sourcesJar
+  archives javadocJar
+}
+
+signing {
+  required { gradle.taskGraph.hasTask("uploadArchives") }
+  sign configurations.archives
+}
+
+// Set sonatypeUsername and sonatypePassword in your ~/.gradle/gradle.properties to be able to use this.
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      beforeDeployment { deployment -> signing.signPom(deployment) }
+
+      repository(url: isReleaseVersion ?
+        "https://oss.sonatype.org/service/local/staging/deploy/maven2/" :
+        "https://oss.sonatype.org/content/repositories/snapshots/") {
+        def u = project.hasProperty('sonatypeUsername') ? sonatypeUsername : 'FIXME'
+        def p = project.hasProperty('sonatypePassword') ? sonatypePassword : 'FIXME'
+        authentication(userName: u, password: p)
+      }
+
+      pom.project {
+        name 'jersey-guice-dispatch-wrapper'
+        packaging 'jar'
+        description 'Automatic Jersey/Metrics integration'
+        url 'https://github.com/palominolabs/jersey-metrics-filter'
+
+        scm {
+          url 'scm:git@github.com:palominolabs/jersey-metrics-filter.git'
+          connection 'scm:git@github.com:palominolabs/jersey-metrics-filter.git'
+          developerConnection 'scm:git@github.com:palominolabs/jersey-metrics-filter.git'
+        }
+
+        licenses {
+          license {
+            name 'The Apache Software License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            distribution 'repo'
+          }
+        }
+
+        developers {
+          developer {
+            id 'marshallpierce'
+            name 'Marshall Pierce'
+          }
+        }
+      }
+    }
+  }
+}
