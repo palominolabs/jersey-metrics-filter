@@ -51,7 +51,6 @@ dependencies {
 
 repositories {
   mavenCentral()
-  mavenLocal()
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
