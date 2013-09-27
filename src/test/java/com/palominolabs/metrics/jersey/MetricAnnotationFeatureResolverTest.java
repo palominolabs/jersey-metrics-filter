@@ -66,7 +66,7 @@ public class MetricAnnotationFeatureResolverTest {
 
     }
 
-    @ResourceMetrics(timing = false)
+    @ResourceMetrics(timer = false)
     private static class FooResourceDisabled {
 
     }
@@ -86,12 +86,12 @@ public class MetricAnnotationFeatureResolverTest {
         }
 
         @Override
-        public boolean timing() {
+        public boolean timer() {
             return timing;
         }
 
         @Override
-        public boolean statusCodes() {
+        public boolean statusCodeCounter() {
             return false;
         }
 

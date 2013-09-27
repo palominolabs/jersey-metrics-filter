@@ -10,7 +10,7 @@ import org.skife.config.Default;
 public interface MetricsConfig {
 
     /**
-     * @return true if resource methods should have timing metrics captured by default
+     * @return true if resource methods should have timer metrics captured by default
      */
     @Config("palominolabs.jersey.metrics.resourceMethod.timer.enabledByDefault")
     @Default("true")
@@ -19,7 +19,7 @@ public interface MetricsConfig {
     /**
      * @return true if resource methods should have status code metrics captured by default
      */
-    @Config("palominolabs.jersey.metrics.resourceMethod.statusCode.enabledByDefault")
+    @Config("palominolabs.jersey.metrics.resourceMethod.statusCodeCounter.enabledByDefault")
     @Default("true")
-    boolean isStatusCodeEnabledByDefault();
+    boolean isStatusCodeCounterEnabledByDefault();
 }

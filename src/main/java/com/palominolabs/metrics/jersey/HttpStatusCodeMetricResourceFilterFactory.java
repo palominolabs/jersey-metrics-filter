@@ -50,7 +50,7 @@ public final class HttpStatusCodeMetricResourceFilterFactory implements Resource
                 .getState((AbstractResourceMethod) am, new StatusCodeMetricsAnnotationChecker());
 
             if (state == EnabledState.OFF ||
-                (state == EnabledState.UNSPECIFIED && !metricsConfig.isStatusCodeEnabledByDefault())) {
+                (state == EnabledState.UNSPECIFIED && !metricsConfig.isStatusCodeCounterEnabledByDefault())) {
                 return null;
             }
 

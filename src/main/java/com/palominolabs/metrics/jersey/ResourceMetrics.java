@@ -16,10 +16,10 @@ public @interface ResourceMetrics {
     /**
      * @return true if timing should be measured for the annotated method (or all methods on the annotated class)
      */
-    boolean timing() default true;
+    boolean timer() default true;
 
     /**
      * @return true if status codes be measured for the annotated method (or all methods on the annotated class)
      */
-    boolean statusCodes() default true;
+    boolean statusCodeCounter() default true;
 }
