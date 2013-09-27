@@ -120,6 +120,7 @@ public class FullStackTest {
         assertEquals(200,
             httpClient.prepareGet("http://localhost:" + PORT + "/enabledOnClass").execute().get().getStatusCode());
 
+        // these other two resource classes should not have metrics
         assertEquals(200,
             httpClient.prepareGet("http://localhost:" + PORT + "/disabledOnClass").execute().get().getStatusCode());
 
