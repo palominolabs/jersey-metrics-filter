@@ -11,10 +11,10 @@ import com.palominolabs.jersey.dispatchwrapper.ResourceMethodWrappedDispatchModu
 public final class ResourceMethodMetricsModule extends AbstractModule{
     @Override
     protected void configure() {
-        ConfigModule.bindConfigBean(binder(), MetricsConfig.class);
+        ConfigModule.bindConfigBean(binder(), JerseyMetricsConfig.class);
         bind(ResourceMetricNamer.class).to(ResourceMetricNamerImpl.class);
 
         ResourceMethodWrappedDispatchModule.bindWrapperFactory(binder(), MetricsWrapperFactory.class);
-        bind(HttpStatusCodeMetricResourceFilterFactory.class);
+        bind(HttpStatusCodeCounterResourceFilterFactory.class);
     }
 }

@@ -18,15 +18,15 @@ import com.sun.jersey.api.model.AbstractResourceMethod;
  */
 final class MetricsWrapperFactory implements ResourceMethodDispatchWrapperFactory {
 
-    private final MetricsConfig metricsConfig;
+    private final JerseyMetricsConfig jerseyMetricsConfig;
 
     private final ResourceMetricNamer namer;
     private final MetricRegistry metricsRegistry;
 
     @Inject
-    MetricsWrapperFactory(MetricsConfig metricsConfig, ResourceMetricNamer namer,
+    MetricsWrapperFactory(JerseyMetricsConfig jerseyMetricsConfig, ResourceMetricNamer namer,
         @JerseyResourceMetrics MetricRegistry metricsRegistry) {
-        this.metricsConfig = metricsConfig;
+        this.jerseyMetricsConfig = jerseyMetricsConfig;
         this.namer = namer;
         this.metricsRegistry = metricsRegistry;
     }
@@ -36,7 +36,7 @@ final class MetricsWrapperFactory implements ResourceMethodDispatchWrapperFactor
         EnabledState state = MetricAnnotationFeatureResolver.getState(am, new TimingMetricsAnnotationChecker());
 
         if (state == EnabledState.OFF ||
-            (state == EnabledState.UNSPECIFIED && !metricsConfig.isTimingEnabledByDefault())) {
+            (state == EnabledState.UNSPECIFIED && !jerseyMetricsConfig.isTimingEnabledByDefault())) {
             return null;
         }
 

@@ -19,19 +19,19 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 @Singleton
-public final class HttpStatusCodeMetricResourceFilterFactory implements ResourceFilterFactory {
+public final class HttpStatusCodeCounterResourceFilterFactory implements ResourceFilterFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(HttpStatusCodeMetricResourceFilterFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpStatusCodeCounterResourceFilterFactory.class);
 
-    private final MetricsConfig metricsConfig;
+    private final JerseyMetricsConfig jerseyMetricsConfig;
 
     private final ResourceMetricNamer namer;
     private final MetricRegistry metricsRegistry;
 
     @Inject
-    HttpStatusCodeMetricResourceFilterFactory(MetricsConfig metricsConfig, ResourceMetricNamer namer,
+    HttpStatusCodeCounterResourceFilterFactory(JerseyMetricsConfig jerseyMetricsConfig, ResourceMetricNamer namer,
         @JerseyResourceMetrics MetricRegistry metricsRegistry) {
-        this.metricsConfig = metricsConfig;
+        this.jerseyMetricsConfig = jerseyMetricsConfig;
         this.namer = namer;
         this.metricsRegistry = metricsRegistry;
     }
@@ -50,7 +50,7 @@ public final class HttpStatusCodeMetricResourceFilterFactory implements Resource
                 .getState((AbstractResourceMethod) am, new StatusCodeMetricsAnnotationChecker());
 
             if (state == EnabledState.OFF ||
-                (state == EnabledState.UNSPECIFIED && !metricsConfig.isStatusCodeCounterEnabledByDefault())) {
+                (state == EnabledState.UNSPECIFIED && !jerseyMetricsConfig.isStatusCodeCounterEnabledByDefault())) {
                 return null;
             }
 
@@ -59,7 +59,7 @@ public final class HttpStatusCodeMetricResourceFilterFactory implements Resource
 
             return Lists
                 .<ResourceFilter>newArrayList(
-                    new HttpStatusCodeMetricResourceFilter(metricsRegistry, metricBaseName, resourceClass));
+                    new HttpStatusCodeCounterResourceFilter(metricsRegistry, metricBaseName, resourceClass));
         } else {
             logger.warn("Got an unexpected instance of " + am.getClass().getName() + ": " + am);
             return null;

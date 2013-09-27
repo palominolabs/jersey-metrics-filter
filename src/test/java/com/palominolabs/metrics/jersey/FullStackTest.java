@@ -70,7 +70,7 @@ public class FullStackTest {
 
         final Map<String, String> initParams = new HashMap<>();
         initParams.put(ResourceConfig.PROPERTY_RESOURCE_FILTER_FACTORIES,
-            HttpStatusCodeMetricResourceFilterFactory.class.getCanonicalName());
+            HttpStatusCodeCounterResourceFilterFactory.class.getCanonicalName());
         initParams.put(ResourceConfig.FEATURE_DISABLE_WADL, "true");
 
         Injector injector = Guice.createInjector(new AbstractModule() {

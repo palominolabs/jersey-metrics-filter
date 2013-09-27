@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentMap;
  * Filter that increments per-status-code counters.
  */
 @ThreadSafe
-final class HttpStatusCodeMetricResourceFilter implements ResourceFilter, ContainerResponseFilter {
+final class HttpStatusCodeCounterResourceFilter implements ResourceFilter, ContainerResponseFilter {
 
     private final ConcurrentMap<Integer, Counter> counters = new ConcurrentHashMap<>();
 
@@ -30,7 +30,7 @@ final class HttpStatusCodeMetricResourceFilter implements ResourceFilter, Contai
 
     private final MetricRegistry metricsRegistry;
 
-    HttpStatusCodeMetricResourceFilter(MetricRegistry metricsRegistry, String metricBaseName, Class<?> resourceClass) {
+    HttpStatusCodeCounterResourceFilter(MetricRegistry metricsRegistry, String metricBaseName, Class<?> resourceClass) {
         this.metricsRegistry = metricsRegistry;
         this.metricBaseName = metricBaseName;
         this.resourceClass = resourceClass;
