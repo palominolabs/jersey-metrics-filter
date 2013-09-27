@@ -19,7 +19,7 @@ ext {
 }
 
 dependencies {
-  compile "com.palominolabs.jersey:jersey-guice-dispatch-wrapper:1.0.0"
+  compile "com.palominolabs.jersey:jersey-guice-dispatch-wrapper:1.0.1"
   compile "com.palominolabs.config:config-inject:1.0.0"
   compile "com.sun.jersey:jersey-core:$depVersions.jersey"
   compile "com.sun.jersey:jersey-server:$depVersions.jersey"
@@ -89,7 +89,7 @@ uploadArchives {
       }
 
       pom.project {
-        name 'jersey-guice-dispatch-wrapper'
+        name 'jersey-metrics-filter'
         packaging 'jar'
         description 'Automatic Jersey/Metrics integration'
         url 'https://github.com/palominolabs/jersey-metrics-filter'
