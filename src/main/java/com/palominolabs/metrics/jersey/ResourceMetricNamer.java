@@ -8,7 +8,7 @@ import com.sun.jersey.api.model.AbstractResourceMethod;
 
 import javax.annotation.Nonnull;
 
-interface ResourceMetricNamer {
+public interface ResourceMetricNamer {
 
     /**
      * @param am resource method
