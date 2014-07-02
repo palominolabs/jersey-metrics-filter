@@ -35,7 +35,7 @@ final class ResourceMetricNamerImpl implements ResourceMetricNamer {
 
         if (metricId.isEmpty()) {
             // this happens for WadlResource -- that case actually exists at "application.wadl" though
-            metricId = "(no path)";
+            metricId = "_no path_";
         }
 
         metricId += " " + httpMethod;
